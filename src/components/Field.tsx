@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Switch } from "antd";
 import { field } from "../HomePage";
@@ -6,11 +6,12 @@ import "./field.css";
 import { useTreeTraversal } from "../hooks/useTreeTraversal";
 
 const Field = ({ field, fields, setFields }: Props) => {
-  const [input, setInput] = useState<string>("addName");
-  const [type, setType] = useState<string>("String");
-  const [required, setRequired] = useState<boolean>(false);
   const [children, setChildren] = useState<field[]>([]);
   const { insertNode, deleteNode, updateNode } = useTreeTraversal();
+
+  const input = useRef<undefined | HTMLInputElement>();
+  const type = useRef<undefined | HTMLSelectElement>();
+  const [required, setRequired] = useState<boolean>();
 
   const handleAddField = () => {
     const newChild = {
@@ -48,8 +49,8 @@ const Field = ({ field, fields, setFields }: Props) => {
   const handleUpdate = () => {
     const updatedField = {
       id: field.id,
-      type,
-      input,
+      type: type.current.value,
+      input: input.current.value,
       required,
       children,
     };
@@ -62,13 +63,7 @@ const Field = ({ field, fields, setFields }: Props) => {
     setFields([...newFields]);
   };
 
-  // useEffect(() => {
-  //   handleUpdate();
-  // }, [input.length, type, required]);
-
   useEffect(() => {
-    setType(field.type);
-    setInput(field.input);
     setRequired(field.required);
     setChildren(field.children);
   }, [fields]);
@@ -76,8 +71,8 @@ const Field = ({ field, fields, setFields }: Props) => {
   return (
     <>
       <div className="field">
-        <input value={input} onChange={(e) => setInput(e.target.value)} />
-        <select value={type} onChange={(e) => setType(e.target.value)}>
+        <input defaultValue={field.input} ref={input} onChange={handleUpdate} />
+        <select defaultValue={field.type} ref={type} onChange={handleUpdate}>
           {items.map((item) => (
             <option key={item.key} value={item.label}>
               {item.label}
@@ -85,16 +80,16 @@ const Field = ({ field, fields, setFields }: Props) => {
           ))}
         </select>
         <Switch
-          defaultChecked={required}
+          defaultChecked={field?.required}
           checked={required}
           onClick={(val) => setRequired(val)}
         />
-        {type === "Object" && <PlusOutlined onClick={handleAddField} />}
+        {field?.type === "Object" && <PlusOutlined onClick={handleAddField} />}
         <DeleteOutlined onClick={handleDelete} />
       </div>
       <div style={{ paddingTop: "5px", paddingLeft: "25px" }}>
-        {type === "Object" &&
-          children?.map((child) => (
+        {field?.type === "Object" &&
+          field?.children?.map((child) => (
             <Field
               key={child.id}
               field={child}

@@ -30,22 +30,47 @@ export const useTreeTraversal = () => {
     return { ...tree, children: newTree };
   };
 
+  // const updateNode = (
+  //   tree: field,
+  //   nodeId: number,
+  //   updatedChild: any
+  // ): field => {
+  //   let newChildren = tree.children.filter((child) => child.id !== nodeId);
+  //   if (newChildren.length !== tree.children.length) {
+  //     tree.children = [...newChildren, updatedChild];
+  //   }
+
+  //   let child = [];
+  //   child = tree.children.map((node) => {
+  //     return updateNode(node, nodeId, updatedChild);
+  //   });
+
+  //   return { ...tree, children: child };
+  // };
+
   const updateNode = (
     tree: field,
     nodeId: number,
     updatedChild: any
   ): field => {
-    let newChildren = tree.children.filter((child) => child.id !== nodeId);
-    if (newChildren.length !== tree.children.length) {
-      tree.children = [...newChildren, updatedChild];
+    if (tree.id === nodeId) {
+      return { ...tree, ...updatedChild };
     }
 
-    let child = [];
-    child = tree.children.map((node) => {
-      return updateNode(node, nodeId, updatedChild);
-    });
+    const children = tree.children.map((child) =>
+      updateNode(child, nodeId, updatedChild)
+    );
 
-    return { ...tree, children: child };
+    const index = tree.children.findIndex((child) => child.id === nodeId);
+
+    if (index === -1) {
+      return { ...tree, children };
+    }
+
+    const newChildren = [...tree.children];
+    newChildren.splice(index, 1, updatedChild);
+
+    return { ...tree, children: newChildren };
   };
 
   return { insertNode, deleteNode, updateNode };
