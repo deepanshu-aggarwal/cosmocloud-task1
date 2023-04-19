@@ -1,0 +1,12 @@
+.App {
+  display: flex;
+  margin-left: 25px;
+  margin-top: 25px;
+}
+
+.heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}

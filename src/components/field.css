@@ -1,0 +1,9 @@
+.field {
+  display: flex;
+  padding: 5px;
+  width: 350px;
+  justify-content: space-between;
+  border: 1px solid lightgray;
+  align-items: center;
+  border-radius: 5px;
+}
